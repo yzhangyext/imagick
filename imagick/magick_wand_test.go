@@ -12,6 +12,19 @@ var (
 	mw *MagickWand
 )
 
+// SUPPORTED_FORMATS are verified to be present in the available formats.
+var SUPPORTED_FORMATS = []string{
+	"BMP",
+	"GIF",
+	"JPEG",
+	"JPG",
+	"PNG",
+	"SVG",
+	"TGA",
+	"TIFF",
+	"WEBP",
+}
+
 func Init() {
 	Initialize()
 }
@@ -26,6 +39,7 @@ func TestNewMagickWand(t *testing.T) {
 }
 
 func TestCloningAndDestroying(t *testing.T) {
+	t.Skip()
 	clone := mw.Clone()
 	if !clone.IsVerified() {
 		t.Fatal("Unsuccessful clone")
@@ -54,6 +68,8 @@ func TestNonExistingConfigureOption(t *testing.T) {
 }
 
 func TestQueryFonts(t *testing.T) {
+	t.Log("font support is disabled")
+	t.Skip()
 	fonts := mw.QueryFonts("*")
 	if len(fonts) == 0 {
 		t.Fatal("ImageMagick have not identified a single font in this system")
@@ -65,9 +81,24 @@ func TestQueryFormats(t *testing.T) {
 	if len(formats) == 0 {
 		t.Fatal("ImageMagick have not identified a single image format in this system")
 	}
+	for _, requiredFormat := range SUPPORTED_FORMATS {
+		if !contains(formats, requiredFormat) {
+			t.Errorf("Format %s is missing", requiredFormat)
+		}
+	}
+}
+
+func contains(slice []string, item string) bool {
+	for _, elem := range slice {
+		if elem == item {
+			return true
+		}
+	}
+	return false
 }
 
 func TestDeleteImageArtifact(t *testing.T) {
+	t.Skip()
 	err := mw.DeleteImageArtifact("*")
 	t.Log(err.Error())
 }
